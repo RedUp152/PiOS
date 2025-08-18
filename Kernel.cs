@@ -10,7 +10,7 @@ namespace PiOS
 {
     public class Kernel : Sys.Kernel
     {
-        const String OS = "PiOS v. 08.25 - 0";
+        const String OS = "PiOS v. 08.25 - 1";
         Sys.FileSystem.CosmosVFS FileSystem;
         String Directory = @"0:\";
         bool FileManagerIsOpen = false;
