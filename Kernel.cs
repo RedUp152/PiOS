@@ -1,8 +1,10 @@
-// (c)2025 RedUp152.All rights reserved.
+// (c)RedUp152.All rights reserved.
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Sys = Cosmos.System;
 
@@ -10,9 +12,9 @@ namespace PiOS
 {
     public class Kernel : Sys.Kernel
     {
-        const String OS = "PiOS v. 08.25 - 1";
+        const String OS = "PiOS v. 08.25 - 0";
         Sys.FileSystem.CosmosVFS FileSystem;
-        String Directory = @"0:\";
+        String CurrentDirectory = @"0:\";
         bool FileManagerIsOpen = false;
         const String Username = "User";
         Random Randomizer = new Random();
@@ -61,10 +63,10 @@ namespace PiOS
 
                 Thread.Sleep(Randomizer.Next(1500, 3000));
                 Console.Clear();
-                Console.WriteLine(OS + "\n(c)2025 RedUp152. All rights reserved.");
+                Console.WriteLine(OS + "\n(c) RedUp152. All rights reserved.");
                 Console.WriteLine("\nWelcome! Type \"help\" to see the command list.");
             }
-
+            
             catch (Exception Error){
                 BlueScreen(Error, "An error occurred while preparing the operating system.");
             }
@@ -74,9 +76,10 @@ namespace PiOS
         {
             try{
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.CursorVisible = true;
 
                 if (FileManagerIsOpen == true){
-                    Console.Write(Directory + " >>> ");
+                    Console.Write(CurrentDirectory + " >>> ");
                     string input = Console.ReadLine().ToLower();
                     OSFileManager(input);
                 }
@@ -89,15 +92,13 @@ namespace PiOS
             }
             catch (Exception Error){BlueScreen(Error, "An error occurred while the operating system was running.");}
         }
-        //IMPORTANT: TESTING OS!!!
-        //TODO: test everything!
 
         void Commands(String input)
         {
-            try{
+            try {
                 switch (input) {
                     default:
-                        if (input == "?") { goto case "help";}
+                        if (input == "?") { goto case "help"; }
                         else if (input == "cls") { goto case "clear"; }
                         else if (input == "fm") { goto case "filemanager"; }
                         else { Error("Command \"" + input + "\" not found."); }
@@ -166,14 +167,20 @@ Save this to a file for playback.  ");
                         break;
 
                     case "sysinfo":
-                        Console.WriteLine("Processor: " + Cosmos.Core.CPU.GetCPUBrandString() + ".");
-                        Console.WriteLine("Processor vendor: " + Cosmos.Core.CPU.GetCPUVendorName()  + ".");
-                        Console.WriteLine("RAM: " + ((double)Cosmos.Core.CPU.GetAmountOfRAM()).ToString() + " MB,");
-                        Console.WriteLine("Available RAM: " + ((double)Cosmos.Core.GCImplementation.GetAvailableRAM()).ToString() + "MB,");
-                        Console.WriteLine("Total memory: " + ((double)DriveInfo.GetDrives()[0].TotalSize / 1048576).ToString() + "MB,");
-                        Console.WriteLine("Available disk space: " + ((double)DriveInfo.GetDrives()[0].AvailableFreeSpace / 1048576).ToString() + "MB.");
+                        try{
+                            Console.WriteLine("Processor: " + Cosmos.Core.CPU.GetCPUBrandString() + ".");
+                            Console.WriteLine("Processor vendor: " + Cosmos.Core.CPU.GetCPUVendorName() + ".");
+                        }
+                        catch { Console.ForegroundColor = ConsoleColor.Red ;  Console.WriteLine("Couldn't get information about the device processor."); Console.ForegroundColor = ConsoleColor.DarkGreen; }
+                        try{
+                            Console.WriteLine("RAM: " + (Cosmos.Core.CPU.GetAmountOfRAM()).ToString() + " MB,");
+                            Console.WriteLine("Available RAM: " + (Cosmos.Core.GCImplementation.GetAvailableRAM()).ToString() + "MB,");
+                        } catch { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("Couldn't get information about RAM on the device."); Console.ForegroundColor = ConsoleColor.DarkGreen; }
+                            try {
+                            Console.WriteLine("Total memory: " + (DriveInfo.GetDrives().FirstOrDefault().TotalSize / 1048576).ToString() + "MB,");
+                            Console.WriteLine("Available disk space: " + (DriveInfo.GetDrives().FirstOrDefault().AvailableFreeSpace / 1048576).ToString() + "MB.");
+                        } catch { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("Couldn't get information about the memory on the device."); Console.ForegroundColor = ConsoleColor.DarkGreen; }
                         break;
-
                     case "datetime":
                         Console.WriteLine(DateTime.Now);
                         break;
@@ -207,26 +214,26 @@ Save this to a file for playback.  ");
                         string MusicFileHear = Console.ReadLine();
                         FileInfo MusicFileHearInfo = GetFileInfo(MusicFileHear);
                         if (MusicFileHearInfo == null) { Error("The \"" + MusicFileHear + "\" file was not found"); break; }
-                        try{
-                            String[] FileHearData = File.ReadAllText(MusicFileHearInfo.FullName).Replace(" ","").ToUpper().Split(";");
-                            foreach (String InputNotes in FileHearData){
+                        try {
+                            String[] FileHearData = File.ReadAllText(MusicFileHearInfo.FullName).Replace(" ", "").ToUpper().Split(";");
+                            foreach (String InputNotes in FileHearData) {
                                 String[] Note = InputNotes.Split(",");
-                                if (Note.Length == 2){
-                                    if (Note[0] == "P") 
-                                    { 
-                                       Thread.Sleep( System.Convert.ToInt32(Note[1]) ); 
+                                if (Note.Length == 2) {
+                                    if (Note[0] == "P")
+                                    {
+                                        Thread.Sleep(System.Convert.ToInt32(Note[1]));
                                     }
-                                    else{
-                                        try{
-                                            Console.Beep( Notes[Note[0]] , System.Convert.ToInt32(Note[1]) );
+                                    else {
+                                        try {
+                                            Console.Beep(Notes[Note[0]], System.Convert.ToInt32(Note[1]));
                                         }
-                                        catch{
+                                        catch {
                                             Console.ForegroundColor = ConsoleColor.Red;
-                                            Console.WriteLine("Note \""+ Note[0] +"\" (length: \"" + Note[1] + "\" ms) could not be processed.");
+                                            Console.WriteLine("Note \"" + Note[0] + "\" (length: \"" + Note[1] + "\" ms) could not be processed.");
                                         }
                                     }
                                 }
-                                else{
+                                else {
                                     Error("Couldn't process the file.");
                                 }
                             }
@@ -235,7 +242,7 @@ Save this to a file for playback.  ");
                         break;
                 }
             }
-            catch (Exception Error){BlueScreen(Error, "An error occurred while the operating system was running.");}
+            catch (Exception Error){ BlueScreen(Error, "An error occurred while the operating system was running.");}
         }
         void OSFileManager(String input) {
             try
@@ -256,16 +263,16 @@ Save this to a file for playback.  ");
                         break;
 
                     case "home":
-                        Directory = @"0:\";
+                        CurrentDirectory = @"0:\";
                         break;
 
                     case "newfile":
                         Console.WriteLine("Enter the file name");
                         input = Console.ReadLine();
                         if (input.Contains("Root.txt") || input.Contains("Kudzu.txt")) { Error("Access is denied"); break; }
-                        if (GetFileInfo(Directory + input) != null) { Error("A file with the same name already exists."); break; }
+                        if (GetFileInfo(CurrentDirectory + input) != null) { Error("A file with the same name already exists."); break; }
                         if (input.Contains(".") == false) { Error("The file does not have an extension."); break; }
-                        FileSystem.CreateFile(Directory + input);
+                        FileSystem.CreateFile(CurrentDirectory + input);
                         break;
 
                     case "delfile":
@@ -280,9 +287,9 @@ Save this to a file for playback.  ");
                         Console.WriteLine("Enter the directory name");
                         input = Console.ReadLine();
                         if (input.Contains("TEST") || input.Contains("Dir Testing")) { Error("Access is denied"); break; }
-                        if (GetFileInfo(Directory + @"\" + input) != null) { Error("A directory with the same name already exists."); break; }
-                        if (Directory == @"0:\") { FileSystem.CreateDirectory(Directory + input); }
-                        else { FileSystem.CreateDirectory(Directory + @"\" + input); }
+                        if (GetFileInfo(CurrentDirectory + @"\" + input) != null) { Error("A directory with the same name already exists."); break; }
+                        if (CurrentDirectory == @"0:\") { FileSystem.CreateDirectory(CurrentDirectory + input); }
+                        else { FileSystem.CreateDirectory(CurrentDirectory + @"\" + input); }
                         break;
 
                     case "deldirectory":
@@ -298,7 +305,7 @@ Save this to a file for playback.  ");
                         Console.WriteLine("Enter the full name of the directory");
                         input = Console.ReadLine().Trim();
                         DirectoryInfo CdDir = new DirectoryInfo(input);
-                        if (CdDir.Exists) { Directory = input; } else { Error("The \"" + input + "\" directory was not found."); }
+                        if (CdDir.Exists) { CurrentDirectory = input; } else { Error("The \"" + input + "\" directory was not found."); }
                         break;
 
                     case "copyfile":
@@ -358,7 +365,7 @@ Save this to a file for playback.  ");
                         if (NewPatchDirectoryMoveInfo == null) { Error("The \"" + NewPatchDirectoryMove + "\" directory was not found."); break; }
                         if (GetDirectoryInfo(NewPatchDirectoryMoveInfo.FullName + @"\" + DirectoryMoveInfo.Name) != null) { Error("A directory with the same name already exists on this path."); break; }
                         CopyDirectoryErrorHandling(DirectoryMoveInfo, NewPatchDirectoryMoveInfo.FullName);
-                        if (Directory == DirectoryMoveInfo.FullName) { Directory = @"0:\"; }
+                        if (CurrentDirectory == DirectoryMoveInfo.FullName) { CurrentDirectory = @"0:\"; }
                         DirectoryMoveInfo.Delete(true);
                         break;
 
@@ -380,7 +387,7 @@ Save this to a file for playback.  ");
                         break;
 
                     case "dir":
-                        var DirectoryList = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(Directory);
+                        var DirectoryList = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(CurrentDirectory);
                         foreach (var DirectoryEntry in DirectoryList)
                         {
                             try
@@ -410,12 +417,12 @@ Save this to a file for playback.  ");
                 if (Name.StartsWith(@"0:\")) { Info = new FileInfo(Name); }
                 else
                 {
-                    if (Directory.EndsWith(@"\")) { Info = new FileInfo(Directory+ Name); }
-                    else if (Directory.EndsWith(@"\") == false) { Info = new FileInfo(Directory+ @"\"+ Name); }
-                    else { Info = new FileInfo(Directory+ Name); }
+                    if (CurrentDirectory.EndsWith(@"\")) { Info = new FileInfo(CurrentDirectory + Name); }
+                    else if (CurrentDirectory.EndsWith(@"\") == false) { Info = new FileInfo(CurrentDirectory + @"\"+ Name); }
+                    else { Info = new FileInfo(CurrentDirectory + Name); }
                 }
-                if (Info.Exists) {  return Info; }
-                else if (Info.Exists == false) {  return null; }
+                if (File.Exists(Info.FullName)) {  return Info; }
+                else if (File.Exists(Info.FullName) == false) {  return null; }
                 else { return null; }
             }
             catch (Exception Error) { BlueScreen(Error, "An error occurred during file processing."); return null; }
@@ -428,10 +435,10 @@ Save this to a file for playback.  ");
 
                 if (Name.StartsWith(@"0:\")){ DirInfo = new DirectoryInfo(Name); }
                 else {
-                    if (Directory.EndsWith(@"\")) { DirInfo = new DirectoryInfo(Directory+ Name); }
-                    else { DirInfo = new DirectoryInfo(Directory + @"\" + Name); }
+                    if (CurrentDirectory.EndsWith(@"\")) { DirInfo = new DirectoryInfo(CurrentDirectory + Name); }
+                    else { DirInfo = new DirectoryInfo(CurrentDirectory + @"\" + Name); }
                 }
-                if (DirInfo.Exists) { return DirInfo; }
+                if (Directory.Exists(DirInfo.FullName)) { return DirInfo; }
                 else { return null; }
             }
             catch (Exception Error) { BlueScreen(Error, "An error occurred during directory processing."); return null; }
@@ -510,7 +517,7 @@ Save this to a file for playback.  ");
                 Console.WriteLine("OS:" + OS);
                 Console.WriteLine("Processor: " + Cosmos.Core.CPU.GetCPUBrandString());
                 Console.WriteLine("RAM: " + Cosmos.Core.CPU.GetAmountOfRAM().ToString() + " MB");
-                Console.WriteLine("Error: " + Error);
+                Console.WriteLine("Error: " +  Error.ToString());
                 Console.WriteLine("Information about the error: " + Info);
                 if(Error.Message == @"Path part '0:' not found!") { Console.WriteLine("Additional information: The disk must be formatted."); }
                 Console.WriteLine("\nPress any key to restart your computer. Please do not turn off the device.");
