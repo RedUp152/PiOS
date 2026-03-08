@@ -36,3 +36,12 @@
 - ***writetofile*** - writes text to a file,  
 - ***appendtofile*** - adds text to what is written in the file,  
 - ***readfile*** - outputs the text written to the file.
+
+## Screenshots:
+![Screenshot-1](https://github.com/RedUp152/PiOS/blob/main/Docs/Screenshot-1.png)  
+  
+![Screenshot-2](https://github.com/RedUp152/PiOS/blob/main/Docs/Screenshot-2.png)  
+  
+![Screenshot-3](https://github.com/RedUp152/PiOS/blob/main/Docs/Screenshot-3.png)  
+  
+![Screenshot-4](https://github.com/RedUp152/PiOS/blob/main/Docs/Screenshot-4.png)  
