@@ -22,7 +22,7 @@
 
 **In the file manager:**  
 - ***exit*** - exiting the file manager,  
-- ***home*** - selects the directory "0:\",  
+- ***home*** - selects the directory "0:\\",  
 - ***newfile*** - create a new file,  
 - ***delfile*** - delete a file,  
 - ***newdirectory*** - create a new directory,  
