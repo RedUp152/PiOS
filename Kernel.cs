@@ -13,12 +13,16 @@ namespace PiOS
     public class Kernel : Sys.Kernel
     {
         const String OS = "PiOS v. 09.25 - 01";
+        const String Username = "User";
+
         Sys.FileSystem.CosmosVFS FileSystem;
         String CurrentDirectory = @"0:\";
         bool FileManagerIsOpen = false;
-        const String Username = "User";
+
         Random Randomizer = new Random();
+
         Byte RecursiveCounter;
+
         Dictionary<string, int> Notes = new Dictionary<string, int>
         {
             {"C",131}, {"D",147}, {"E",165}, {"F",175}, {"G",196}, {"A",220}, { "H",247},
@@ -26,11 +30,10 @@ namespace PiOS
             {"C2",523}, {"D2",587}, {"E2",659}, {"F2",698}, {"G2",784}, {"A2",880}, {"H2",988},
             {"C3",1047}, {"D3",1175}, {"E3",1319}, {"F3",1398}, {"G3",1568}, {"A3",1760}, {"H3",1976}
         };
-        protected override void BeforeRun()
-        {
-            try{
-                for (byte Counter = 1; Counter <= 4; Counter++)
-                {
+
+        protected override void BeforeRun() {
+            try {
+                for (byte Counter = 1; Counter <= 4; Counter++) {
                     Console.Clear();
                     Console.WriteLine("\n" + @"
                         ____     __      ____     _____
@@ -41,71 +44,104 @@ namespace PiOS
                        |__|     |__|   \ ___ /   |____/  " + "\n\n\n\n\n\n\n\n");
                     Console.WriteLine("                              " + OS);
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.Write("                             "+ "||||");
-                    for (byte Counter2 = 1; Counter2 <= Counter; Counter2++) { Console.Write("||||"); }
+                    Console.Write("                             " + "||||");
+                    for (byte Counter2 = 1; Counter2 <= Counter; Counter2++) 
+                        Console.Write("||||");
+
                     Console.ForegroundColor = ConsoleColor.White;
-                    switch (Counter)
-                    {
-                        case 1: Console.WriteLine("\n\n\n\n\n\nOS Integrity Check..."); break;
-                        case 2: Console.WriteLine("\n\n\n\n\n\nPreparing the file system..."); 
-                            FileSystem = new Sys.FileSystem.CosmosVFS();
-                            Sys.FileSystem.VFS.VFSManager.RegisterVFS(FileSystem); break;
-                        case 3: Console.WriteLine("\n\n\n\n\n\nChecking system files...");
-                            try { if (GetFileInfo(@"0:\Kudzu.txt") != null) {GetFileInfo(@"0:\Kudzu.txt").Delete(); }} catch { }
-                            try { if (GetFileInfo(@"0:\Root.txt") != null) {GetFileInfo(@"0:\Root.txt").Delete(); }} catch { }
-                            try { if (GetDirectoryInfo(@"0:\TEST") != null) { GetDirectoryInfo(@"0:\TEST").Delete(true); }} catch { }
-                            try { if (GetDirectoryInfo(@"0:\Dir Testing") != null) { GetDirectoryInfo(@"0:\Dir Testing").Delete(true); }} catch { }
+
+                    switch (Counter) {
+                        case 1: 
+                            Console.WriteLine("\n\n\n\n\n\nOS Integrity Check...");
                             break;
-                        case 4: Console.WriteLine("\n\n\n\n\n\nOS launch..."); break;
+
+                        case 2:
+                            Console.WriteLine("\n\n\n\n\n\nPreparing the file system...");
+                            FileSystem = new Sys.FileSystem.CosmosVFS();
+                            Sys.FileSystem.VFS.VFSManager.RegisterVFS(FileSystem);
+                            break;
+
+                        case 3:
+                            Console.WriteLine("\n\n\n\n\n\nChecking system files...");
+                            try {
+                                if (GetFileInfo(@"0:\Kudzu.txt") != null) 
+                                    GetFileInfo(@"0:\Kudzu.txt").Delete(); } 
+                            catch { }
+
+                            try {
+                                if (GetFileInfo(@"0:\Root.txt") != null)
+                                    GetFileInfo(@"0:\Root.txt").Delete(); } 
+                            catch { }
+
+                            try {
+                                if (GetDirectoryInfo(@"0:\TEST") != null) 
+                                    GetDirectoryInfo(@"0:\TEST").Delete(true); }
+                            catch { }
+
+                            try {
+                                if (GetDirectoryInfo(@"0:\Dir Testing") != null) 
+                                    GetDirectoryInfo(@"0:\Dir Testing").Delete(true); } 
+                            catch { }
+                            break;
+                        
+                        case 4:
+                            Console.WriteLine("\n\n\n\n\n\nOS launch...");
+                            break;
                     }
                     Thread.Sleep(Randomizer.Next(350, 1500));
                 }
 
-                Thread.Sleep(Randomizer.Next(1500, 3000));
+                Thread.Sleep(Randomizer.Next(1500, 2000));
+
                 Console.Clear();
                 Console.WriteLine(OS + "\n(c) RedUp152. All rights reserved.");
                 Console.WriteLine("\nWelcome! Type \"help\" to see the command list.");
             }
-            
-            catch (Exception Error){
+
+            catch (Exception Error) {
                 BlueScreen(Error, "An error occurred while preparing the operating system.");
             }
         }
 
-        protected override void Run()
-        {
-            try{
+        protected override void Run() {
+            try {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.CursorVisible = true;
 
-                if (FileManagerIsOpen == true){
+                if (FileManagerIsOpen == true) {
                     Console.Write(CurrentDirectory + " >>> ");
                     string input = Console.ReadLine().ToLower();
                     OSFileManager(input);
                 }
-                else{
+
+                else {
                     Console.Write(@"PiOS\" + Username + " >>> ");
                     string input = Console.ReadLine().ToLower();
                     Commands(input);
                 }
-                
+
             }
-            catch (Exception Error){BlueScreen(Error, "An error occurred while the operating system was running.");}
+            catch (Exception Error) {
+                BlueScreen(Error, "An error occurred while the operating system was running."); }
         }
 
-        void Commands(String input)
-        {
+        void Commands(String input) {
             try {
                 switch (input) {
                     default:
-                        if (input == "?") { goto case "help"; }
-                        else if (input == "cls") { goto case "clear"; }
-                        else if (input == "fm") { goto case "filemanager"; }
-                        else { Error("Command \"" + input + "\" not found."); }
-                        break;
-                    /*case "":
+                        if (input == "?")
+                            goto case "help";
 
-                        break;*/
+                        else if (input == "cls")
+                            goto case "clear";
+
+                        else if (input == "fm")
+                            goto case "filemanager";
+
+                        else
+                            Error("Command \"" + input + "\" not found.");
+
+                        break;
 
                     case "help":
                         Console.WriteLine(@"help - shows the list of commands,
@@ -157,7 +193,7 @@ Save this to a file for playback.  ");
                         break;
 
                     case "echo":
-                        Console.WriteLine("Enter your text");
+                        Console.WriteLine("Enter your text.");
                         input = Console.ReadLine();
                         Console.WriteLine(input);
                         break;
@@ -167,20 +203,35 @@ Save this to a file for playback.  ");
                         break;
 
                     case "sysinfo":
-                        try{
+                        try {
                             Console.WriteLine("Processor: " + Cosmos.Core.CPU.GetCPUBrandString() + ".");
                             Console.WriteLine("Processor vendor: " + Cosmos.Core.CPU.GetCPUVendorName() + ".");
                         }
-                        catch { Console.ForegroundColor = ConsoleColor.Red ;  Console.WriteLine("Couldn't get information about the device processor."); Console.ForegroundColor = ConsoleColor.DarkGreen; }
-                        try{
+                        catch {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Couldn't get information about the device processor.");
+                            Console.ForegroundColor = ConsoleColor.DarkGreen;}
+
+                        try {
                             Console.WriteLine("RAM: " + (Cosmos.Core.CPU.GetAmountOfRAM()).ToString() + " MB,");
                             Console.WriteLine("Available RAM: " + (Cosmos.Core.GCImplementation.GetAvailableRAM()).ToString() + "MB,");
-                        } catch { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("Couldn't get information about RAM on the device."); Console.ForegroundColor = ConsoleColor.DarkGreen; }
-                            try {
+                        }
+                        catch {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Couldn't get information about RAM on the device.");
+                            Console.ForegroundColor = ConsoleColor.DarkGreen; }
+
+                        try {
                             Console.WriteLine("Total memory: " + (DriveInfo.GetDrives().FirstOrDefault().TotalSize / 1048576).ToString() + "MB,");
                             Console.WriteLine("Available disk space: " + (DriveInfo.GetDrives().FirstOrDefault().AvailableFreeSpace / 1048576).ToString() + "MB.");
-                        } catch { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("Couldn't get information about the memory on the device."); Console.ForegroundColor = ConsoleColor.DarkGreen; }
+                        }
+                        catch {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("Couldn't get information about the memory on the device.");
+                            Console.ForegroundColor = ConsoleColor.DarkGreen; }
+
                         break;
+
                     case "datetime":
                         Console.WriteLine(DateTime.Now);
                         break;
@@ -197,30 +248,38 @@ Save this to a file for playback.  ");
                     case "randomrange":
                         Console.WriteLine("Enter the minimum value");
                         string Minimum = Console.ReadLine();
+
                         Console.WriteLine("Enter the maximum value");
                         string Maximum = Console.ReadLine();
-                        try
-                        {
-                            Console.WriteLine(Randomizer.Next(minValue: Convert.ToInt32(Minimum), maxValue: Convert.ToInt32(Maximum)));
+
+                        try {
+                            Console.WriteLine(Randomizer.Next(minValue: Convert.ToInt32(Minimum),
+                                maxValue: Convert.ToInt32(Maximum)));
                         }
-                        catch
-                        {
+                        catch {
                             Error("The specified values could not be processed. Verify their correctness and ensure no extra characters are present.");
                         }
+
                         break;
 
                     case "hearmusic":
                         Console.WriteLine("Enter the file name");
                         string MusicFileHear = Console.ReadLine();
                         FileInfo MusicFileHearInfo = GetFileInfo(MusicFileHear);
-                        if (MusicFileHearInfo == null) { Error("The \"" + MusicFileHear + "\" file was not found"); break; }
+
+                        if (MusicFileHearInfo == null) {
+                            Error("The \"" + MusicFileHear + "\" file was not found");
+                            break; }
+
                         try {
                             String[] FileHearData = File.ReadAllText(MusicFileHearInfo.FullName).Replace(" ", "").ToUpper().Split(";");
+
                             foreach (String InputNotes in FileHearData) {
                                 String[] Note = InputNotes.Split(",");
+
                                 if (Note.Length == 2) {
-                                    if (Note[0] == "P")
-                                    {
+
+                                    if (Note[0] == "P") {
                                         Thread.Sleep(System.Convert.ToInt32(Note[1]));
                                     }
                                     else {
@@ -238,24 +297,38 @@ Save this to a file for playback.  ");
                                 }
                             }
                         }
-                        catch { Error("Couldn't process the file."); }
+                        catch {
+                            Error("Couldn't process the file."); }
+
                         break;
                 }
             }
-            catch (Exception Error){ BlueScreen(Error, "An error occurred while the operating system was running.");}
+            catch (Exception Error) {
+                BlueScreen(Error, "An error occurred while the operating system was running."); }
         }
+
         void OSFileManager(String input) {
-            try
-            {
-                switch (input)
-                {
+            try {
+                switch (input) {
                     default:
-                        if (input == "shutdown") { goto case "exit"; }
-                        else if (input == "newdir") { goto case "newdirectory"; }
-                        else if (input == "deldir") { goto case "deldirectory"; }
-                        else if (input == "copydir") { goto case "copydirectory"; }
-                        else if (input == "movedir") { goto case "movedirectory"; }
-                        else { Error("The \"" + input + "\" command was not found."); }
+                        if (input == "shutdown")
+                            goto case "exit";
+
+                        else if (input == "newdir")
+                            goto case "newdirectory";
+
+                        else if (input == "deldir")
+                            goto case "deldirectory";
+
+                        else if (input == "copydir")
+                            goto case "copydirectory";
+
+                        else if (input == "movedir")
+                            goto case "movedirectory";
+
+                        else {
+                            Error("The \"" + input + "\" command was not found."); }
+
                         break;
 
                     case "exit":
@@ -269,104 +342,214 @@ Save this to a file for playback.  ");
                     case "newfile":
                         Console.WriteLine("Enter the file name");
                         input = Console.ReadLine();
-                        if (input.Contains("Root.txt") || input.Contains("Kudzu.txt")) { Error("Access is denied"); break; }
-                        if (GetFileInfo(CurrentDirectory + input) != null) { Error("A file with the same name already exists."); break; }
-                        if (input.Contains(".") == false) { Error("The file does not have an extension."); break; }
+
+                        if (input.Contains("Root.txt") || input.Contains("Kudzu.txt")) {
+                            Error("Access is denied"); 
+                            break; }
+
+                        if (GetFileInfo(CurrentDirectory + input) != null) { 
+                            Error("A file with the same name already exists.");
+                            break; }
+
+                        if (input.Contains(".") == false) {
+                            Error("The file does not have an extension.");
+                            break; }
+
                         FileSystem.CreateFile(CurrentDirectory + input);
                         break;
 
                     case "delfile":
                         Console.WriteLine("Enter the file name");
                         input = Console.ReadLine();
+
                         FileInfo FileToDelete = GetFileInfo(input);
-                        if (FileToDelete == null) { Error("File \"" + input + "\" was not found."); break; }
+
+                        if (FileToDelete == null) {
+                            Error("File \"" + input + "\" was not found.");
+                            break; }
+
                         FileToDelete.Delete();
                         break;
 
                     case "newdirectory":
                         Console.WriteLine("Enter the directory name");
                         input = Console.ReadLine();
-                        if (input.Contains("TEST") || input.Contains("Dir Testing")) { Error("Access is denied"); break; }
-                        if (GetFileInfo(CurrentDirectory + @"\" + input) != null) { Error("A directory with the same name already exists."); break; }
-                        if (CurrentDirectory == @"0:\") { FileSystem.CreateDirectory(CurrentDirectory + input); }
-                        else { FileSystem.CreateDirectory(CurrentDirectory + @"\" + input); }
+
+                        if (input == "TEST" || input == "Dir Testing") { 
+                            Error("Access is denied");
+                            break; }
+
+                        if (GetFileInfo(CurrentDirectory + @"\" + input) != null) {
+                            Error("A directory with the same name already exists.");
+                            break; }
+
+                        if (CurrentDirectory == @"0:\") 
+                            FileSystem.CreateDirectory(CurrentDirectory + input);
+                        else 
+                            FileSystem.CreateDirectory(CurrentDirectory + @"\" + input);
+
                         break;
 
                     case "deldirectory":
                         Console.WriteLine("Enter the directory name");
                         input = Console.ReadLine();
+
                         DirectoryInfo DirectoryToDelete = GetDirectoryInfo(input);
-                        if (DirectoryToDelete == null) { Error("The \"" + input + "\" directory was not found."); break; }
-                        if (DirectoryToDelete.FullName == @"0:\") { Error("Access is denied"); break; }
+
+                        if (DirectoryToDelete == null) {
+                            Error("The \"" + input + "\" directory was not found.");
+                            break; }
+
+                        if (DirectoryToDelete.FullName == @"0:\") {
+                            Error("Access is denied");
+                            break; }
+
                         DirectoryToDelete.Delete(true);
                         break;
 
                     case "cd":
                         Console.WriteLine("Enter the full name of the directory");
                         input = Console.ReadLine().Trim();
+
                         DirectoryInfo CdDir = new DirectoryInfo(input);
-                        if (CdDir.Exists) { CurrentDirectory = input; } else { Error("The \"" + input + "\" directory was not found."); }
+
+                        if (CdDir.Exists)
+                            CurrentDirectory = input;
+                        else 
+                            Error("The \"" + input + "\" directory was not found.");
+
                         break;
 
                     case "copyfile":
                         Console.WriteLine("Enter the file name");
                         string FileCopy = Console.ReadLine();
+
                         FileInfo FileCopyInfo = GetFileInfo(FileCopy);
-                        if (FileCopyInfo == null) { Error("The \"" + FileCopy + "\" file was not found."); break; }
+
+                        if (FileCopyInfo == null) {
+                            Error("The \"" + FileCopy + "\" file was not found.");
+                            break; }
+
                         Console.WriteLine("Enter the new file location");
                         string NewPatchFileCopy = Console.ReadLine();
-                        DirectoryInfo NewPatchFileCopyInfo = GetDirectoryInfo(NewPatchFileCopy);
-                        if (NewPatchFileCopyInfo == null) { Error("The \"" + NewPatchFileCopy + "\" directory was not found."); break; }
 
-                        if (NewPatchFileCopyInfo.FullName.EndsWith(@"\")) { if (GetFileInfo(NewPatchFileCopyInfo.FullName + FileCopyInfo.Name) != null) { Error("A file with the same name already exists on this path."); break; } }
-                        else { if (GetFileInfo(NewPatchFileCopyInfo.FullName + @"\" + FileCopyInfo.Name) != null) { Error("A file with the same name already exists on this path."); break; } }
+                        DirectoryInfo NewPatchFileCopyInfo = GetDirectoryInfo(NewPatchFileCopy);
+
+                        if (NewPatchFileCopyInfo == null) {
+                            Error("The \"" + NewPatchFileCopy + "\" directory was not found.");
+                            break; }
+
+                        if (NewPatchFileCopyInfo.FullName.EndsWith(@"\")) {
+                            if (GetFileInfo(NewPatchFileCopyInfo.FullName + FileCopyInfo.Name) != null) {
+                                Error("A file with the same name already exists on this path.");
+                                break;
+                            }
+                        }
+
+                        else {
+                            if (GetFileInfo(NewPatchFileCopyInfo.FullName + @"\" + FileCopyInfo.Name) != null) {
+                                Error("A file with the same name already exists on this path.");
+                                break;
+                            }
+                        }
+
                         File.Copy(FileCopyInfo.FullName, NewPatchFileCopyInfo.FullName);
+
                         break;
 
                     case "movefile":
                         Console.WriteLine("Enter the file name");
                         string FileMove = Console.ReadLine();
+
                         FileInfo FileMoveInfo = GetFileInfo(FileMove);
-                        if (FileMoveInfo == null) { Error("The \"" + FileMove + "\" file was not found."); break; }
+
+                        if (FileMoveInfo == null) {
+                            Error("The \"" + FileMove + "\" file was not found.");
+                            break; }
+
                         Console.WriteLine("Enter the new file location");
                         string NewPatchFileMove = Console.ReadLine();
+
                         DirectoryInfo NewPatchFileMoveInfo = GetDirectoryInfo(NewPatchFileMove);
-                        if (NewPatchFileMoveInfo == null) { Error("The \"" + NewPatchFileMove + "\" directory was not found."); break; }
-                        if (GetFileInfo(NewPatchFileMoveInfo.FullName + @"\" + FileMoveInfo.Name) != null) { Error("A file with the same name already exists on this path."); break; }
-                        Console.WriteLine(FileMoveInfo.FullName);
-                        Console.WriteLine(NewPatchFileMoveInfo.FullName);
+
+                        if (NewPatchFileMoveInfo == null) {
+                            Error("The \"" + NewPatchFileMove + "\" directory was not found.");
+                            break; }
+
+                        if (GetFileInfo(NewPatchFileMoveInfo.FullName + @"\" + FileMoveInfo.Name) != null) {
+                            Error("A file with the same name already exists on this path.");
+                            break; }
+
                         File.Copy(FileMoveInfo.FullName, NewPatchFileMoveInfo.FullName);
                         File.Delete(FileMoveInfo.FullName);
+
                         break;
 
                     case "copydirectory":
                         Console.WriteLine("Enter the directory name");
                         string DirectoryCopy = Console.ReadLine();
-                        if (DirectoryCopy == @"0:\") { Error("Access denied."); break; }
+
+                        if (DirectoryCopy == @"0:\") {
+                            Error("Access denied.");
+                            break; }
+
                         DirectoryInfo DirectoryCopyInfo = GetDirectoryInfo(DirectoryCopy);
-                        if (DirectoryCopyInfo == null) { Error("The \"" + DirectoryCopy + "\" directory was not found."); break; }
+
+                        if (DirectoryCopyInfo == null) {
+                            Error("The \"" + DirectoryCopy + "\" directory was not found.");
+                            break; }
+
                         Console.WriteLine("Enter the new directory location");
                         string NewPatchDirectoryCopy = Console.ReadLine();
+
                         DirectoryInfo NewPatchDirectoryCopyInfo = GetDirectoryInfo(NewPatchDirectoryCopy);
-                        if (NewPatchDirectoryCopyInfo == null) { Error("The \"" + NewPatchDirectoryCopy + "\" directory was not found."); break; }
-                        if (GetDirectoryInfo(NewPatchDirectoryCopyInfo.FullName + @"\" + DirectoryCopyInfo.Name) != null) { Error("A directory with the same name already exists on this path."); break; }
+
+                        if (NewPatchDirectoryCopyInfo == null) {
+                            Error("The \"" + NewPatchDirectoryCopy + "\" directory was not found.");
+                            break; }
+
+                        if (GetDirectoryInfo(NewPatchDirectoryCopyInfo.FullName + @"\" + DirectoryCopyInfo.Name) != null) {
+                            Error("A directory with the same name already exists on this path.");
+                            break; }
+
                         CopyDirectoryErrorHandling(DirectoryCopyInfo, NewPatchDirectoryCopyInfo.FullName);
+
                         break;
 
                     case "movedirectory":
                         Console.WriteLine("Enter the directory name");
                         string DirectoryMove = Console.ReadLine();
-                        if (DirectoryMove == @"0:\") { Error("Access denied."); break; }
+
+                        if (DirectoryMove == @"0:\") {
+                            Error("Access denied.");
+                            break; }
+
                         DirectoryInfo DirectoryMoveInfo = GetDirectoryInfo(DirectoryMove);
-                        if (DirectoryMoveInfo == null) { Error("The \"" + DirectoryMove + "\" directory was not found."); break; }
+
+                        if (DirectoryMoveInfo == null) {
+                            Error("The \"" + DirectoryMove + "\" directory was not found.");
+                            break; }
+
                         Console.WriteLine("Enter the new directory location");
                         string NewPatchDirectoryMove = Console.ReadLine();
+
                         DirectoryInfo NewPatchDirectoryMoveInfo = GetDirectoryInfo(NewPatchDirectoryMove);
-                        if (NewPatchDirectoryMoveInfo == null) { Error("The \"" + NewPatchDirectoryMove + "\" directory was not found."); break; }
-                        if (GetDirectoryInfo(NewPatchDirectoryMoveInfo.FullName + @"\" + DirectoryMoveInfo.Name) != null) { Error("A directory with the same name already exists on this path."); break; }
+
+                        if (NewPatchDirectoryMoveInfo == null) {
+                            Error("The \"" + NewPatchDirectoryMove + "\" directory was not found.");
+                            break; }
+
+                        if (GetDirectoryInfo(NewPatchDirectoryMoveInfo.FullName + @"\" + DirectoryMoveInfo.Name) != null) {
+                            Error("A directory with the same name already exists on this path.");
+                            break; }
+
                         CopyDirectoryErrorHandling(DirectoryMoveInfo, NewPatchDirectoryMoveInfo.FullName);
-                        if (CurrentDirectory == DirectoryMoveInfo.FullName) { CurrentDirectory = @"0:\"; }
+
+                        if (CurrentDirectory == DirectoryMoveInfo.FullName)
+                            CurrentDirectory = @"0:\";
+
                         DirectoryMoveInfo.Delete(true);
+
                         break;
 
                     case "writetofile":
@@ -380,167 +563,218 @@ Save this to a file for playback.  ");
                     case "readfile":
                         Console.WriteLine("Enter the file name");
                         string FileRead = Console.ReadLine();
+
                         FileInfo FileReadInfo = GetFileInfo(FileRead);
-                        if (FileReadInfo == null) { Error("The \"" + FileRead + "\" file was not found."); break; }
-                        try { Console.WriteLine(File.ReadAllText(FileReadInfo.FullName)); }
-                        catch { Error("Couldn't read the file."); }
+
+                        if (FileReadInfo == null) {
+                            Error("The \"" + FileRead + "\" file was not found.");
+                            break; }
+
+                        try {
+                            Console.WriteLine(File.ReadAllText(FileReadInfo.FullName)); }
+                        catch {
+                            Error("Couldn't read the file."); }
+
                         break;
 
                     case "dir":
                         var DirectoryList = Sys.FileSystem.VFS.VFSManager.GetDirectoryListing(CurrentDirectory);
-                        foreach (var DirectoryEntry in DirectoryList)
-                        {
-                            try
-                            {
+
+                        foreach (var DirectoryEntry in DirectoryList) {
+                            try {
                                 var EntryType = DirectoryEntry.mEntryType;
-                                if (EntryType == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.File)
-                                {
+
+                                if (EntryType == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.File) {
                                     Console.WriteLine("<File>           " + DirectoryEntry.mName);
                                 }
-                                if (EntryType == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory)
-                                {
+
+                                if (EntryType == Sys.FileSystem.Listing.DirectoryEntryTypeEnum.Directory) {
                                     Console.WriteLine("<Directory>          " + DirectoryEntry.mName);
                                 }
                             }
-                            catch { Error("An unexpected error has occurred. Please try again later. Also, ensure the directory is specified correctly."); }
+                            catch {
+                                Error("An unexpected error has occurred. Please try again later. Also, ensure the directory is specified correctly.");
+                            }
+
                         }
                         break;
                 }
             }
-            catch (Exception Error) { BlueScreen(Error, "An error occurred while working with the file system."); }
+            catch (Exception Error) {
+                BlueScreen(Error, "An error occurred while working with the file system."); }
         }
 
-        private FileInfo GetFileInfo(string Name){
-            try
-            {
+        private FileInfo GetFileInfo(string Name) {
+            try {
                 FileInfo Info;
-                if (Name.StartsWith(@"0:\")) { Info = new FileInfo(Name); }
-                else
-                {
-                    if (CurrentDirectory.EndsWith(@"\")) { Info = new FileInfo(CurrentDirectory + Name); }
-                    else if (CurrentDirectory.EndsWith(@"\") == false) { Info = new FileInfo(CurrentDirectory + @"\"+ Name); }
-                    else { Info = new FileInfo(CurrentDirectory + Name); }
-                }
-                if (File.Exists(Info.FullName)) {  return Info; }
-                else if (File.Exists(Info.FullName) == false) {  return null; }
-                else { return null; }
-            }
-            catch (Exception Error) { BlueScreen(Error, "An error occurred during file processing."); return null; }
-        }
-        private DirectoryInfo GetDirectoryInfo(string Name) {
-            try
-            {
-                DirectoryInfo DirInfo;
-                if (Name == @"0:\") { return new DirectoryInfo(@"0:\"); }
 
-                if (Name.StartsWith(@"0:\")){ DirInfo = new DirectoryInfo(Name); }
+                if (Name.StartsWith(@"0:\")) 
+                    Info = new FileInfo(Name);
+
                 else {
-                    if (CurrentDirectory.EndsWith(@"\")) { DirInfo = new DirectoryInfo(CurrentDirectory + Name); }
-                    else { DirInfo = new DirectoryInfo(CurrentDirectory + @"\" + Name); }
+                    if (CurrentDirectory.EndsWith(@"\")) 
+                        Info = new FileInfo(CurrentDirectory + Name);
+
+                    else if (CurrentDirectory.EndsWith(@"\") == false) 
+                        Info = new FileInfo(CurrentDirectory + @"\" + Name);
+
+                    else 
+                        Info = new FileInfo(CurrentDirectory + Name);
                 }
-                if (Directory.Exists(DirInfo.FullName)) { return DirInfo; }
-                else { return null; }
+                if (File.Exists(Info.FullName))
+                    return Info;
+
+                else if (File.Exists(Info.FullName) == false)
+                    return null;
+
+                else
+                    return null;
             }
-            catch (Exception Error) { BlueScreen(Error, "An error occurred during directory processing."); return null; }
+            catch (Exception Error) {
+                BlueScreen(Error, "An error occurred during file processing.");
+                return null; }
         }
 
-        void CopyDirectoryErrorHandling(DirectoryInfo DirectoryToCopy, String NewPatch){
-            try{
+        private DirectoryInfo GetDirectoryInfo(string Name) {
+            try {
+                DirectoryInfo DirInfo;
+
+                if (Name == @"0:\")
+                    return new DirectoryInfo(@"0:\");
+
+                if (Name.StartsWith(@"0:\"))
+                    DirInfo = new DirectoryInfo(Name);
+
+                else {
+                    if (CurrentDirectory.EndsWith(@"\"))
+                        DirInfo = new DirectoryInfo(CurrentDirectory + Name);
+                    else
+                        DirInfo = new DirectoryInfo(CurrentDirectory + @"\" + Name);
+                }
+
+                if (Directory.Exists(DirInfo.FullName))
+                    return DirInfo;
+                else
+                    return null;
+            }
+            catch (Exception Error) {
+                BlueScreen(Error, "An error occurred during directory processing.");
+                return null; }
+        }
+
+        void CopyDirectoryErrorHandling(DirectoryInfo DirectoryToCopy, String NewPatch) {
+            try {
                 RecursiveCounter = 0;
                 CopyDirectory(DirectoryToCopy, NewPatch);
-                
             }
-            catch(Exception CopyingError){
-                if (CopyingError.Message == "StopCopyingRecursion") { Error("Error copying/moving a directory: too many subdirectories."); }
-                else { BlueScreen(CopyingError, "An error occurred during directory copying/moving."); }
+            catch (Exception CopyingError) {
+                if (CopyingError.Message == "StopCopyingRecursion")
+                    Error("Error copying/moving a directory: too many subdirectories.");
+
+                else
+                    BlueScreen(CopyingError, "An error occurred during directory copying/moving.");
             }
         }
 
         void CopyDirectory(DirectoryInfo DirectoryToCopy, String NewPatch)
         {
             RecursiveCounter++;
-            if (RecursiveCounter > 100) { throw new Exception("StopCopyingRecursion"); }
+
+            if (RecursiveCounter > 100)
+                throw new Exception("StopCopyingRecursion");
 
             string DirectoryToCopyNewPath = NewPatch + @"\" + DirectoryToCopy.Name;
             DirectoryInfo[] SubDirectories = DirectoryToCopy.GetDirectories();
+
             FileSystem.CreateDirectory(DirectoryToCopyNewPath);
-            foreach (FileInfo File in DirectoryToCopy.GetFiles())
-            {
+
+            foreach (FileInfo File in DirectoryToCopy.GetFiles()) {
                 string NewFilePath = DirectoryToCopyNewPath + @"\" + File.Name;
                 File.CopyTo(NewFilePath);
             }
-            if (SubDirectories.Length > 0)
-            {
-                foreach (DirectoryInfo SubDirectory in SubDirectories)
-                {
+
+            if (SubDirectories.Length > 0) {
+                foreach (DirectoryInfo SubDirectory in SubDirectories) {
                     string newDestinationDir = DirectoryToCopyNewPath + @"\" + SubDirectory.Name;
                     CopyDirectory(SubDirectory, newDestinationDir);
                 }
             }
         }
         void WriteToFile(string Mode) {
-            try{
+            try {
                 Console.WriteLine("Enter the file name");
                 string FileToWrite = Console.ReadLine();
+
                 FileInfo FileToWriteInfo = GetFileInfo(FileToWrite);
-                if (FileToWriteInfo == null) { Error("The \"" + FileToWrite + "\" file was not found."); return; ; }
+
+                if (FileToWriteInfo == null) {
+                    Error("The \"" + FileToWrite + "\" file was not found.");
+                    return;}
+
                 Console.WriteLine("Enter the text. To wrap a line, type \"\\n\". To save the text to the file, press \"Enter\".");
+
                 string InputText = Console.ReadLine();
-                if (Mode == "WriteAllText") { File.WriteAllText(FileToWriteInfo.FullName, InputText.Replace("\\n", "\n")); }
-                if (Mode == "Append") { File.AppendAllText(FileToWriteInfo.FullName, InputText.Replace("\\n", "\n")); }
-        }
-            catch (Exception Error) {
+
+                if (Mode == "WriteAllText")
+                    File.WriteAllText(FileToWriteInfo.FullName, InputText.Replace("\\n", "\n"));
+
+                if (Mode == "Append")
+                    File.AppendAllText(FileToWriteInfo.FullName, InputText.Replace("\\n", "\n")); 
+            }
+            catch (Exception Error){
                 BlueScreen(Error, "An error occurred while writing the file.");
-    }
-}
-        
+            }
+        }
+
         static void Error(String Error) {
-            try
-            {
+            try {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Beep();
                 Console.WriteLine(Error);
             }
-            catch(Exception VoidError)
-            {
+            catch (Exception VoidError) {
                 BlueScreen(VoidError, "An error occurred during error handling.");
             }
-            
         }
 
-        static void BlueScreen(Exception Error, string Info) {
-            try{
+        static void BlueScreen(Exception Error, string Info)
+        {
+            try {
                 Console.BackgroundColor = ConsoleColor.Blue;
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.White;
+
                 Console.WriteLine("A critical error occurred during system operation. Details:");
                 Console.WriteLine("OS:" + OS);
                 Console.WriteLine("Processor: " + Cosmos.Core.CPU.GetCPUBrandString());
                 Console.WriteLine("RAM: " + Cosmos.Core.CPU.GetAmountOfRAM().ToString() + " MB");
-                Console.WriteLine("Error: " +  Error.ToString());
+                Console.WriteLine("Error: " + Error.ToString());
                 Console.WriteLine("Information about the error: " + Info);
-                if(Error.Message == @"Path part '0:' not found!") { Console.WriteLine("Additional information: The disk must be formatted."); }
+                if (Error.Message == @"Path part '0:' not found!")
+                    Console.WriteLine("Additional information: The disk must be formatted.");
+
                 Console.WriteLine("\nPress any key to restart your computer. Please do not turn off the device.");
                 Console.ReadKey();
                 Cosmos.System.Power.Reboot();
             }
-            catch{
+            catch {
                 YellowScreen();
             }
         }
-        
-        static void YellowScreen()
-        {
-            try{
+
+        static void YellowScreen() {
+            try {
                 Console.BackgroundColor = ConsoleColor.Yellow;
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.White;
+
                 Console.WriteLine("An error occurred during critical error handling.");
+
                 Console.WriteLine("Press any key to restart your computer. Please do not turn off the device.");
                 Console.ReadKey();
                 Cosmos.System.Power.Reboot();
             }
-            catch{
+            catch {
                 Cosmos.System.Power.Reboot();
             }
         }
